@@ -2,290 +2,146 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخزون</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>نظام البيع المتقدم - باركود موثوق</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #e0e7ff, #f0f9ff); padding: 16px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+            border-radius: 24px; padding: 16px 24px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(59,130,246,0.2);
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: linear-gradient(135deg, #2563eb, #9333ea); width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; }
+        .logo-text h1 { font-size: 1.5rem; background: linear-gradient(135deg, #2563eb, #9333ea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .status { display: flex; gap: 12px; align-items: center; }
+        .badge { padding: 6px 12px; border-radius: 40px; font-size: 0.8rem; background: #e6f7e6; color: #2e7d32; border: 1px solid #a5d6a7; cursor: pointer; }
+        .quick-sale-btn { background: linear-gradient(135deg, #f97316, #dc2626); color: white; border: none; padding: 8px 20px; border-radius: 40px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .tabs {
+            display: flex; gap: 8px; background: rgba(255,255,255,0.5); backdrop-filter: blur(4px);
+            padding: 8px; border-radius: 60px; margin-bottom: 24px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1; min-width: 100px; padding: 12px 16px; border: none; background: transparent; border-radius: 40px;
+            font-size: 1rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: linear-gradient(135deg, #2563eb, #9333ea); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+        .panel { display: none; animation: fadeIn 0.2s ease; }
+        .panel.active-panel { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px);} to { opacity: 1; transform: translateY(0);} }
+        .sales-grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+        @media (max-width: 800px) { .sales-grid { grid-template-columns: 1fr; } }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-top: 16px; }
+        .product-card, .customer-card, .supplier-card {
+            background: white; border-radius: 20px; padding: 16px; text-align: center; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+        }
+        .product-card:hover, .customer-card:hover, .supplier-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); border-color: #93c5fd; }
+        .cart {
+            background: white; border-radius: 24px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            position: sticky; top: 16px; max-height: 80vh; overflow-y: auto;
+        }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eef2ff; }
+        button {
+            background: #f1f5f9; border: none; padding: 6px 12px; border-radius: 40px; cursor: pointer; transition: 0.1s;
+        }
+        button.primary { background: linear-gradient(135deg, #2563eb, #9333ea); color: white; font-weight: bold; }
+        .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin: 16px 0; }
+        input, select { padding: 10px 12px; border-radius: 30px; border: 1px solid #cbd5e1; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 20px; }
+        .invoice-item, .transaction-item { background: #f9f9ff; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+        .text-small { font-size: 0.8rem; color: #475569; }
+        .scanner-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95);
+            z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        #scanner-video { width: 90%; max-width: 500px; border-radius: 20px; background: black; }
+        .close-scanner, .retry-scanner { margin-top: 20px; background: white; padding: 10px 20px; border-radius: 40px; margin-left: 10px; }
+        .invoice-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
+        table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 0.85rem; }
+        th, td { padding: 8px; text-align: right; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f1f5f9; font-weight: 600; }
+    </style>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>نظام إدارة المخزون</h1>
-            <nav>
-                <button id="loginBtn" class="btn-primary">تسجيل الدخول عبر Google</button>
-                <button id="logoutBtn" class="btn-secondary" style="display:none;">تسجيل الخروج</button>
-            </nav>
-        </header>
+<div class="container">
+    <div class="header">
+        <div class="logo"><div class="logo-icon">💰</div><div class="logo-text"><h1>نظام نقطة البيع</h1><p class="text-small">باركود | طباعة | واتساب</p></div></div>
+        <div class="status">
+            <button id="quickSaleHeaderBtn" class="quick-sale-btn">⚡ بيع سريع</button>
+            <span class="badge">🟢 متصل</span>
+            <span class="badge" id="drive-status">📁 غير متصل</span>
+        </div>
+    </div>
 
-        <main id="mainContent" style="display:none;">
-            <nav class="sidebar">
-                <ul>
-                    <li><a href="#" data-page="inventory">المخزون</a></li>
-                    <li><a href="#" data-page="sales">المبيعات</a></li>
-                    <li><a href="#" data-page="customers">العملاء</a></li>
-                    <li><a href="#" data-page="suppliers">الموردين</a></li>
-                    <li><a href="#" data-page="reports">التقارير</a></li>
-                    <li><a href="#" data-page="invoices">الفواتير</a></li>
-                </ul>
-            </nav>
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="sales">🛒 نقطة البيع</button>
+        <button class="tab-btn" data-tab="products">📦 المنتجات</button>
+        <button class="tab-btn" data-tab="customers">👥 العملاء</button>
+        <button class="tab-btn" data-tab="suppliers">🏭 الموردين</button>
+        <button class="tab-btn" data-tab="invoices">🧾 الفواتير</button>
+        <button class="tab-btn" data-tab="reports">📊 التقارير</button>
+        <button class="tab-btn" data-tab="settings">⚙️ الإعدادات</button>
+        <button class="tab-btn" data-tab="sync">☁️ المزامنة</button>
+    </div>
 
-            <div class="content">
-                <!-- قسم المخزون -->
-                <div id="inventory" class="page">
-                    <h2>إدارة المخزون</h2>
-                    <button class="btn-primary" id="addItemBtn">✚ إضافة منتج</button>
-                    <table id="inventoryTable" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>رقم المنتج</th>
-                                <th>الاسم</th>
-                                <th>الكمية</th>
-                                <th>السعر</th>
-                                <th>الفئة</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryBody"></tbody>
-                    </table>
-                </div>
-
-                <!-- قسم المبيعات -->
-                <div id="sales" class="page" style="display:none;">
-                    <h2>تسجيل المبيعات</h2>
-                    <button class="btn-primary" id="addSaleBtn">✚ مبيعة جديدة</button>
-                    <table id="salesTable" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>رقم المبيعة</th>
-                                <th>العميل</th>
-                                <th>المنتج</th>
-                                <th>الكمية</th>
-                                <th>السعر الوحدة</th>
-                                <th>الإجمالي</th>
-                                <th>التاريخ</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="salesBody"></tbody>
-                    </table>
-                </div>
-
-                <!-- قسم العملاء -->
-                <div id="customers" class="page" style="display:none;">
-                    <h2>إدارة العملاء</h2>
-                    <button class="btn-primary" id="addCustomerBtn">✚ عميل جديد</button>
-                    <table id="customersTable" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الهاتف</th>
-                                <th>البريد الإلكتروني</th>
-                                <th>العنوان</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customersBody"></tbody>
-                    </table>
-                </div>
-
-                <!-- قسم الموردين -->
-                <div id="suppliers" class="page" style="display:none;">
-                    <h2>إدارة الموردين</h2>
-                    <button class="btn-primary" id="addSupplierBtn">✚ مورد جديد</button>
-                    <table id="suppliersTable" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الهاتف</th>
-                                <th>البريد الإلكتروني</th>
-                                <th>المنتجات</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="suppliersBody"></tbody>
-                    </table>
-                </div>
-
-                <!-- قسم التقارير -->
-                <div id="reports" class="page" style="display:none;">
-                    <h2>التقارير والإحصائيات</h2>
-                    <div class="reports-grid">
-                        <div class="report-card">
-                            <h3>إجمالي المخزون</h3>
-                            <p id="totalInventory">0</p>
-                        </div>
-                        <div class="report-card">
-                            <h3>إجمالي المبيعات</h3>
-                            <p id="totalSales">0 ريال</p>
-                        </div>
-                        <div class="report-card">
-                            <h3>عدد العملاء</h3>
-                            <p id="totalCustomers">0</p>
-                        </div>
-                        <div class="report-card">
-                            <h3>عدد الموردين</h3>
-                            <p id="totalSuppliers">0</p>
-                        </div>
+    <!-- نقطة البيع -->
+    <div id="salesPanel" class="panel active-panel">
+        <div class="sales-grid">
+            <div>
+                <div style="background:white; border-radius:20px; padding:16px; margin-bottom:16px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="text" id="barcodeInput" placeholder="باركود أو بحث..." style="flex:2;">
+                        <button id="scanBarcodeBtn" class="primary">📷 مسح</button>
+                        <button id="manualBarcodeBtn" style="background:#e2e8f0;">⌨️ يدوي</button>
                     </div>
+                    <div id="cameraStatus" class="text-small" style="margin-top:8px; color:#2563eb;"></div>
                 </div>
-
-                <!-- قسم الفواتير -->
-                <div id="invoices" class="page" style="display:none;">
-                    <h2>الفواتير</h2>
-                    <div id="invoiceContent"></div>
-                </div>
+                <div id="productsList" class="products-grid"></div>
             </div>
-        </main>
-    </div>
-
-    <!-- نماذج المنتجات -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="itemModalTitle">إضافة منتج جديد</h3>
-            <form id="itemForm">
-                <input type="hidden" id="itemIndex">
-                <div class="form-group">
-                    <label>اسم المنتج:</label>
-                    <input type="text" id="itemName" required>
-                </div>
-                <div class="form-group">
-                    <label>الكمية:</label>
-                    <input type="number" id="itemQuantity" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>السعر:</label>
-                    <input type="number" id="itemPrice" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>الفئة:</label>
-                    <input type="text" id="itemCategory">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">حفظ</button>
-                    <button type="button" class="btn-secondary" id="cancelItemBtn">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- نموذج المبيعات -->
-    <div id="saleModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="saleModalTitle">مبيعة جديدة</h3>
-            <form id="saleForm">
-                <input type="hidden" id="saleIndex">
-                <div class="form-group">
-                    <label>اسم العميل:</label>
-                    <input type="text" id="saleCustomer" required>
-                </div>
-                <div class="form-group">
-                    <label>المنتج:</label>
-                    <select id="saleProduct" required>
-                        <option value="">اختر منتج</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>الكمية:</label>
-                    <input type="number" id="saleQuantity" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label>السعر الوحدة:</label>
-                    <input type="number" id="saleUnitPrice" min="0" step="0.01" readonly>
-                </div>
-                <div class="form-group">
-                    <label>الإجمالي:</label>
-                    <input type="number" id="saleTotal" readonly>
-                </div>
-                <div class="form-group">
-                    <label>التاريخ:</label>
-                    <input type="date" id="saleDate" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">حفظ المبيعة</button>
-                    <button type="button" class="btn-secondary" id="cancelSaleBtn">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- نموذج العملاء -->
-    <div id="customerModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="customerModalTitle">إضافة عميل جديد</h3>
-            <form id="customerForm">
-                <input type="hidden" id="customerIndex">
-                <div class="form-group">
-                    <label>الاسم:</label>
-                    <input type="text" id="customerName" required>
-                </div>
-                <div class="form-group">
-                    <label>الهاتف:</label>
-                    <input type="tel" id="customerPhone" required>
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" id="customerEmail">
-                </div>
-                <div class="form-group">
-                    <label>العنوان:</label>
-                    <textarea id="customerAddress"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">حفظ</button>
-                    <button type="button" class="btn-secondary" id="cancelCustomerBtn">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- نموذج الموردين -->
-    <div id="supplierModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="supplierModalTitle">إضافة مورد جديد</h3>
-            <form id="supplierForm">
-                <input type="hidden" id="supplierIndex">
-                <div class="form-group">
-                    <label>الاسم:</label>
-                    <input type="text" id="supplierName" required>
-                </div>
-                <div class="form-group">
-                    <label>الهاتف:</label>
-                    <input type="tel" id="supplierPhone" required>
-                </div>
-                <div class="form-group">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" id="supplierEmail">
-                </div>
-                <div class="form-group">
-                    <label>المنتجات:</label>
-                    <textarea id="supplierProducts"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">حفظ</button>
-                    <button type="button" class="btn-secondary" id="cancelSupplierBtn">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- تنبيهات الحذف -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content modal-small">
-            <h3>تأكيد الحذف</h3>
-            <p id="confirmMessage">هل أنت متأكد من حذف هذا العنصر؟</p>
-            <div class="form-actions">
-                <button class="btn-danger" id="confirmDeleteBtn">حذف</button>
-                <button class="btn-secondary" id="cancelDeleteBtn">إلغاء</button>
+            <div class="cart">
+                <h3>🧾 السلة</h3>
+                <div id="cartItems"></div>
+                <div class="total-row"><span>المجموع:</span><span id="subtotal">0.00</span> <span>ل.س</span></div>
+                <div class="total-row"><span>الضريبة (<span id="taxRateDisplay">15</span>%):</span><span id="taxAmount">0.00</span> <span>ل.س</span></div>
+                <div class="total-row" style="font-size:1.5rem;"><span>الإجمالي:</span><span id="totalPrice">0.00</span> <span>ل.س</span></div>
+                <button id="checkoutBtn" class="primary" style="width:100%;">💰 إتمام البيع</button>
+                <button id="clearCartBtn" style="width:100%; margin-top:8px;">🗑️ تفريغ</button>
             </div>
         </div>
     </div>
 
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/google-sheets-api.js"></script>
-    <script src="js/app.js"></script>
+    <!-- المنتجات -->
+    <div id="productsPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>➕ إدارة المنتجات</h3><div class="form-grid"><input type="text" id="prodName" placeholder="اسم المنتج"><input type="number" id="prodPrice" placeholder="السعر (ل.س)" step="0.01"><input type="text" id="prodBarcode" placeholder="باركود"><button id="addProductBtn" class="primary">إضافة</button></div><div id="manageProductsList" class="products-grid"></div></div></div>
+
+    <!-- العملاء -->
+    <div id="customersPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>👥 العملاء</h3><div class="form-grid"><input type="text" id="customerName" placeholder="الاسم"><input type="text" id="customerPhone" placeholder="الهاتف"><input type="number" id="customerBalance" placeholder="الرصيد الافتتاحي" step="0.01"><button id="addCustomerBtn" class="primary">إضافة عميل</button></div><div id="customersList"></div></div></div>
+
+    <!-- الموردين -->
+    <div id="suppliersPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>🏭 الموردين</h3><div class="form-grid"><input type="text" id="supplierName" placeholder="الاسم"><input type="text" id="supplierPhone" placeholder="الهاتف"><select id="supplierCurrency"><option value="SYP">ليرة سورية</option><option value="USD">دولار أمريكي</option></select><input type="number" id="supplierBalance" placeholder="الرصيد الافتتاحي" step="0.01"><button id="addSupplierBtn" class="primary">إضافة مورد</button></div><div id="suppliersList"></div></div></div>
+
+    <!-- الفواتير -->
+    <div id="invoicesPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>🧾 الفواتير</h3><div id="salesInvoicesList"></div><div style="margin-top:20px;"><h4>➕ إضافة فاتورة شراء</h4><div class="form-grid"><select id="supplierSelect"><option value="">اختر المورد</option></select><input type="number" id="purchaseAmount" placeholder="المبلغ" step="0.01"><button id="addPurchaseInvoiceBtn" class="primary">تسجيل</button></div><div id="purchaseInvoicesList"></div></div></div></div>
+
+    <!-- التقارير -->
+    <div id="reportsPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>📈 التقارير</h3><div id="statsContent"></div></div></div>
+
+    <!-- الإعدادات -->
+    <div id="settingsPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>⚙️ الإعدادات</h3><div class="form-grid"><label>سعر الصرف (1 دولار = ل.س):</label><input type="number" id="exchangeRate" step="0.01" value="13000"><label>نسبة الضريبة (%):</label><input type="number" id="taxRate" step="0.1" value="15"><button id="saveSettingsBtn" class="primary">حفظ الإعدادات</button></div></div></div>
+
+    <!-- المزامنة -->
+    <div id="syncPanel" class="panel"><div style="background:white; border-radius:24px; padding:20px;"><h3>☁️ Google Drive</h3><div class="grid-cols-2 gap-2" style="display:grid; gap:12px;"><button id="auth-btn" class="primary">ربط الحساب</button><button id="signout-btn">تسجيل الخروج</button><button id="backup-btn" class="primary">نسخ احتياطي</button><button id="restore-btn">استرجاع</button></div><div id="drive-message" class="text-small text-center"></div></div></div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/google-sheets-api.js"></script>
+<script src="js/pos-app.js"></script>
 </body>
 </html>
