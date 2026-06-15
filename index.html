@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المخزون</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>نظام إدارة المخزون</h1>
+            <nav>
+                <button id="loginBtn" class="btn-primary">تسجيل الدخول عبر Google</button>
+            </nav>
+        </header>
+
+        <main id="mainContent" style="display:none;">
+            <nav class="sidebar">
+                <ul>
+                    <li><a href="#" data-page="inventory">المخزون</a></li>
+                    <li><a href="#" data-page="sales">المبيعات</a></li>
+                    <li><a href="#" data-page="customers">العملاء</a></li>
+                    <li><a href="#" data-page="suppliers">الموردين</a></li>
+                    <li><a href="#" data-page="reports">التقارير</a></li>
+                    <li><a href="#" data-page="invoices">الفواتير</a></li>
+                </ul>
+            </nav>
+
+            <div class="content">
+                <div id="inventory" class="page">
+                    <h2>إدارة المخزون</h2>
+                    <button class="btn-primary" id="addItemBtn">إضافة منتج</button>
+                    <table id="inventoryTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم المنتج</th>
+                                <th>الاسم</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="sales" class="page" style="display:none;">
+                    <h2>تسجيل المبيعات</h2>
+                    <button class="btn-primary" id="addSaleBtn">مبيعة جديدة</button>
+                    <table id="salesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم المبيعة</th>
+                                <th>العميل</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>الإجمالي</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="customers" class="page" style="display:none;">
+                    <h2>إدارة العملاء</h2>
+                    <button class="btn-primary" id="addCustomerBtn">عميل جديد</button>
+                    <table id="customersTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الهاتف</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>العنوان</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="suppliers" class="page" style="display:none;">
+                    <h2>إدارة الموردين</h2>
+                    <button class="btn-primary" id="addSupplierBtn">مورد جديد</button>
+                    <table id="suppliersTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الهاتف</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>المنتجات</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="reports" class="page" style="display:none;">
+                    <h2>التقارير والإحصائيات</h2>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3>إجمالي المخزون</h3>
+                            <p id="totalInventory">0</p>
+                        </div>
+                        <div class="report-card">
+                            <h3>إجمالي المبيعات</h3>
+                            <p id="totalSales">0</p>
+                        </div>
+                        <div class="report-card">
+                            <h3>عدد العملاء</h3>
+                            <p id="totalCustomers">0</p>
+                        </div>
+                        <div class="report-card">
+                            <h3>عدد الموردين</h3>
+                            <p id="totalSuppliers">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="invoices" class="page" style="display:none;">
+                    <h2>الفواتير</h2>
+                    <button class="btn-primary" id="printInvoiceBtn">طباعة فاتورة</button>
+                    <div id="invoiceContent"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/google-sheets-api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
