@@ -12,6 +12,7 @@
             <h1>نظام إدارة المخزون</h1>
             <nav>
                 <button id="loginBtn" class="btn-primary">تسجيل الدخول عبر Google</button>
+                <button id="logoutBtn" class="btn-secondary" style="display:none;">تسجيل الخروج</button>
             </nav>
         </header>
 
@@ -28,9 +29,10 @@
             </nav>
 
             <div class="content">
+                <!-- قسم المخزون -->
                 <div id="inventory" class="page">
                     <h2>إدارة المخزون</h2>
-                    <button class="btn-primary" id="addItemBtn">إضافة منتج</button>
+                    <button class="btn-primary" id="addItemBtn">✚ إضافة منتج</button>
                     <table id="inventoryTable" class="data-table">
                         <thead>
                             <tr>
@@ -38,6 +40,7 @@
                                 <th>الاسم</th>
                                 <th>الكمية</th>
                                 <th>السعر</th>
+                                <th>الفئة</th>
                                 <th>الإجراءات</th>
                             </tr>
                         </thead>
@@ -45,9 +48,10 @@
                     </table>
                 </div>
 
+                <!-- قسم المبيعات -->
                 <div id="sales" class="page" style="display:none;">
                     <h2>تسجيل المبيعات</h2>
-                    <button class="btn-primary" id="addSaleBtn">مبيعة جديدة</button>
+                    <button class="btn-primary" id="addSaleBtn">✚ مبيعة جديدة</button>
                     <table id="salesTable" class="data-table">
                         <thead>
                             <tr>
@@ -55,17 +59,20 @@
                                 <th>العميل</th>
                                 <th>المنتج</th>
                                 <th>الكمية</th>
+                                <th>السعر الوحدة</th>
                                 <th>الإجمالي</th>
                                 <th>التاريخ</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="salesBody"></tbody>
                     </table>
                 </div>
 
+                <!-- قسم العملاء -->
                 <div id="customers" class="page" style="display:none;">
                     <h2>إدارة العملاء</h2>
-                    <button class="btn-primary" id="addCustomerBtn">عميل جديد</button>
+                    <button class="btn-primary" id="addCustomerBtn">✚ عميل جديد</button>
                     <table id="customersTable" class="data-table">
                         <thead>
                             <tr>
@@ -80,9 +87,10 @@
                     </table>
                 </div>
 
+                <!-- قسم الموردين -->
                 <div id="suppliers" class="page" style="display:none;">
                     <h2>إدارة الموردين</h2>
-                    <button class="btn-primary" id="addSupplierBtn">مورد جديد</button>
+                    <button class="btn-primary" id="addSupplierBtn">✚ مورد جديد</button>
                     <table id="suppliersTable" class="data-table">
                         <thead>
                             <tr>
@@ -97,6 +105,7 @@
                     </table>
                 </div>
 
+                <!-- قسم التقارير -->
                 <div id="reports" class="page" style="display:none;">
                     <h2>التقارير والإحصائيات</h2>
                     <div class="reports-grid">
@@ -106,7 +115,7 @@
                         </div>
                         <div class="report-card">
                             <h3>إجمالي المبيعات</h3>
-                            <p id="totalSales">0</p>
+                            <p id="totalSales">0 ريال</p>
                         </div>
                         <div class="report-card">
                             <h3>عدد العملاء</h3>
@@ -119,13 +128,159 @@
                     </div>
                 </div>
 
+                <!-- قسم الفواتير -->
                 <div id="invoices" class="page" style="display:none;">
                     <h2>الفواتير</h2>
-                    <button class="btn-primary" id="printInvoiceBtn">طباعة فاتورة</button>
                     <div id="invoiceContent"></div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- نماذج المنتجات -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="itemModalTitle">إضافة منتج جديد</h3>
+            <form id="itemForm">
+                <input type="hidden" id="itemIndex">
+                <div class="form-group">
+                    <label>اسم المنتج:</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label>الكمية:</label>
+                    <input type="number" id="itemQuantity" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>السعر:</label>
+                    <input type="number" id="itemPrice" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>الفئة:</label>
+                    <input type="text" id="itemCategory">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">حفظ</button>
+                    <button type="button" class="btn-secondary" id="cancelItemBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نموذج المبيعات -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="saleModalTitle">مبيعة جديدة</h3>
+            <form id="saleForm">
+                <input type="hidden" id="saleIndex">
+                <div class="form-group">
+                    <label>اسم العميل:</label>
+                    <input type="text" id="saleCustomer" required>
+                </div>
+                <div class="form-group">
+                    <label>المنتج:</label>
+                    <select id="saleProduct" required>
+                        <option value="">اختر منتج</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الكمية:</label>
+                    <input type="number" id="saleQuantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>السعر الوحدة:</label>
+                    <input type="number" id="saleUnitPrice" min="0" step="0.01" readonly>
+                </div>
+                <div class="form-group">
+                    <label>الإجمالي:</label>
+                    <input type="number" id="saleTotal" readonly>
+                </div>
+                <div class="form-group">
+                    <label>التاريخ:</label>
+                    <input type="date" id="saleDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">حفظ المبيعة</button>
+                    <button type="button" class="btn-secondary" id="cancelSaleBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نموذج العملاء -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="customerModalTitle">إضافة عميل جديد</h3>
+            <form id="customerForm">
+                <input type="hidden" id="customerIndex">
+                <div class="form-group">
+                    <label>الاسم:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>الهاتف:</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="customerEmail">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <textarea id="customerAddress"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">حفظ</button>
+                    <button type="button" class="btn-secondary" id="cancelCustomerBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نموذج الموردين -->
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="supplierModalTitle">إضافة مورد جديد</h3>
+            <form id="supplierForm">
+                <input type="hidden" id="supplierIndex">
+                <div class="form-group">
+                    <label>الاسم:</label>
+                    <input type="text" id="supplierName" required>
+                </div>
+                <div class="form-group">
+                    <label>الهاتف:</label>
+                    <input type="tel" id="supplierPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="supplierEmail">
+                </div>
+                <div class="form-group">
+                    <label>المنتجات:</label>
+                    <textarea id="supplierProducts"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">حفظ</button>
+                    <button type="button" class="btn-secondary" id="cancelSupplierBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- تنبيهات الحذف -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-small">
+            <h3>تأكيد الحذف</h3>
+            <p id="confirmMessage">هل أنت متأكد من حذف هذا العنصر؟</p>
+            <div class="form-actions">
+                <button class="btn-danger" id="confirmDeleteBtn">حذف</button>
+                <button class="btn-secondary" id="cancelDeleteBtn">إلغاء</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://apis.google.com/js/api.js"></script>
